@@ -1,0 +1,14 @@
+{
+  "name": "gaigao-youzhang",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "description": "改稿有账：有原文依据的设计需求变更助手",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8f7f3" />
+    <meta name="description" content="改稿有账，把客户的每一次修改变成有原文依据、由你确认的需求记录。" />
+    <title>改稿有账 · 每次修改，都有依据</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到工作区</a>
+    <div id="app"></div>
+    <div id="toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+    <dialog id="modal" aria-labelledby="modal-title"></dialog>
+    <input id="import-file" type="file" accept="application/json,.json" hidden />
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>
