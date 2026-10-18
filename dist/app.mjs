@@ -1,5 +1,5 @@
-import { parseRequirements, compareRequirements, applyConfirmedChanges, calculateQuote } from '/core/engine.mjs';
-import { analyzeWithModel, testModelConnection } from '/core/ai.mjs';
+import { parseRequirements, compareRequirements, applyConfirmedChanges, calculateQuote } from './core/engine.mjs';
+import { analyzeWithModel, testModelConnection } from './core/ai.mjs';
 
 const STORAGE_KEY = 'gaigao-youzhang.workspace.v1';
 const ORIGINAL = '客户：做1张咖啡店开业海报，尺寸1080×1920，10月22日交付，预算300元，包含2轮修改。\n设计师：交付PNG，源文件另行约定。';
@@ -298,7 +298,7 @@ function sameModelConfig(a,b) {
 }
 async function requestModel(path,payload,directCall) {
   async function direct(){try{return await directCall();}catch(error){throw new Error(`${error.message||'模型连接失败。'} 若浏览器阻止连接，请解压作品并双击启动作品.cmd后重试。`);}}
-  if(location.protocol==='file:')return direct();
+  if(location.protocol==='file:'||!['localhost','127.0.0.1','[::1]'].includes(location.hostname))return direct();
   let response;
   try{response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(90000)});}catch(error){if(error.name==='TimeoutError')throw new Error('模型请求超时，请稍后重试。');if(!['localhost','127.0.0.1','[::1]'].includes(location.hostname))return direct();throw new Error('本地服务无法连接。请保持启动窗口开启，再重新测试或分析。');}
   if(response.status===404||response.status===405||response.headers.get('content-type')?.includes('text/html'))return direct();
@@ -427,7 +427,7 @@ function settingsModal() {
   }
   updateConnectionUI=refreshConnectionStatus;
   [model,key,workspace].forEach(input=>input.addEventListener('input',invalidateConnection));
-  const detail=el('div',{},el('div',{class:'form-grid'},formField('模型供应商',provider),formField('模型名称',model,'可填写你的账户可用模型。')),workspaceField,formField('API Key',key,'只在本次页面内存中使用。刷新后清空，不写入本地存储或导出文件。'),el('div',{class:'provider-links'},externalLink('申请 DeepSeek 密钥','https://platform.deepseek.com/api_keys'),externalLink('打开阿里云百炼','https://bailian.console.aliyun.com/'),externalLink('千问密钥与地域说明','https://help.aliyun.com/zh/model-studio/get-api-key')),el('div',{class:'connection-test'},testButton,el('p',{},'测试只发送固定示例内容，不会发送项目聊天；会产生少量模型调用费用。')),connectionStatus,el('div',{class:'inline-warning'},'启用 AI 后，点击分析会把该次聊天与必要的已确认需求发送给所选供应商。请使用脱敏内容。测试和分析的费用均由你的模型账户承担。'),el('p',{class:'settings-disclosure'},'建议解压作品后双击「启动作品.cmd」，保持启动窗口开启。直接打开 HTML 时，如提示无法连接，请改用这种启动方式。'));
+  const detail=el('div',{},el('div',{class:'form-grid'},formField('模型供应商',provider),formField('模型名称',model,'可填写你的账户可用模型。')),workspaceField,formField('API Key',key,'只在本次页面内存中使用。刷新后清空，不写入本地存储或导出文件。'),el('div',{class:'provider-links'},externalLink('申请 DeepSeek 密钥','https://platform.deepseek.com/api_keys'),externalLink('打开阿里云百炼','https://bailian.console.aliyun.com/'),externalLink('千问密钥与地域说明','https://help.aliyun.com/zh/model-studio/get-api-key')),el('div',{class:'connection-test'},testButton,el('p',{},'测试只发送固定示例内容，不会发送项目聊天；会产生少量模型调用费用。')),connectionStatus,el('div',{class:'inline-warning'},'启用 AI 后，点击分析会把该次聊天与必要的已确认需求发送给所选供应商。请使用脱敏内容。测试和分析的费用均由你的模型账户承担。'),el('p',{class:'settings-disclosure'},'在线演示的规则功能无需密钥。在线 AI 由浏览器直连所选供应商，可能受跨域限制；若无法连接，请从代码仓库下载作品，双击「启动作品.cmd」后使用。'));
   detail.hidden=sessionConfig.mode==='rules';
   [rules,live].forEach(r=>r.addEventListener('change',()=>{detail.hidden=!live.checked;invalidateConnection();}));
   provider.addEventListener('change',()=>{model.value=provider.value==='qwen'?'qwen-plus':'deepseek-flash';model.placeholder=model.value;workspaceField.hidden=provider.value!=='qwen';invalidateConnection();});
